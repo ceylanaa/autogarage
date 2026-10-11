@@ -6,6 +6,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "reparaties")
@@ -29,4 +31,13 @@ public class Reparatie {
     private ReparatieStatus status;
 
     private boolean betaald = false;
+
+    @OneToMany(mappedBy = "reparatie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReparatieOnderdeel> onderdelen = new ArrayList<>();
+
+    @OneToMany(mappedBy = "reparatie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ReparatieRegel> handelingen = new ArrayList<>();
+
+    @OneToMany(mappedBy = "reparatie", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OverigeHandeling> overigeHandelingen = new ArrayList<>();
 }
