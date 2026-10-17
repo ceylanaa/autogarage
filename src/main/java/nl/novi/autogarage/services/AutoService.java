@@ -8,7 +8,9 @@ import nl.novi.autogarage.models.Auto;
 import nl.novi.autogarage.models.Klant;
 import nl.novi.autogarage.repositories.AutoRepository;
 import nl.novi.autogarage.repositories.KlantRepository;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +20,12 @@ public class AutoService {
 
     private final AutoRepository autoRepository;
     private final KlantRepository klantRepository;
+    private final FileStorageService fileStorageService;
 
-    public AutoService(AutoRepository autoRepository, KlantRepository klantRepository) {
+    public AutoService(AutoRepository autoRepository, KlantRepository klantRepository, FileStorageService fileStorageService) {
         this.autoRepository = autoRepository;
         this.klantRepository = klantRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     public List<AutoResponseDto> getAllAutos() {
@@ -56,6 +60,29 @@ public class AutoService {
             throw new RecordNotFoundException("Auto met id " + id + " niet gevonden");
         }
         autoRepository.deleteById(id);
+    }
+
+    public void slaAutopapierOp(Long id, MultipartFile bestand) {
+        Auto auto = findAuto(id);
+        if (bestand == null || bestand.isEmpty()) {
+            throw new BadRequestException("Geen bestand meegestuurd");
+        }
+        // alleen pdf toestaan
+        String origineel = bestand.getOriginalFilename();
+        if (origineel == null || !origineel.toLowerCase().endsWith(".pdf")) {
+            throw new BadRequestException("Alleen PDF bestanden zijn toegestaan");
+        }
+        String naam = fileStorageService.slaBestandOp(bestand, "autopapier_" + auto.getId() + ".pdf");
+        auto.setAutopapierNaam(naam);
+        autoRepository.save(auto);
+    }
+
+    public Resource getAutopapier(Long id) {
+        Auto auto = findAuto(id);
+        if (auto.getAutopapierNaam() == null) {
+            throw new RecordNotFoundException("Deze auto heeft nog geen autopapier");
+        }
+        return fileStorageService.laadBestand(auto.getAutopapierNaam());
     }
 
     private Auto findAuto(Long id) {
