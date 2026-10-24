@@ -10,12 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Transactional
 public class ReparatieService {
+
+    // btw percentage is 21%
+    public static final BigDecimal BTW = new BigDecimal("0.21");
 
     private final ReparatieRepository reparatieRepository;
     private final KeuringRepository keuringRepository;
@@ -155,6 +159,59 @@ public class ReparatieService {
         Reparatie reparatie = findReparatie(id);
         reparatie.setBetaald(true);
         return reparatieToResponseDto(reparatieRepository.save(reparatie));
+    }
+
+    // bon maken: keuring (45 euro) + handelingen + overige handelingen + onderdelen, alles met 21% btw
+    @Transactional(readOnly = true)
+    public BonResponseDto genereerBon(Long id) {
+        Reparatie reparatie = findReparatie(id);
+        BonResponseDto bon = new BonResponseDto();
+        bon.reparatieId = reparatie.getId();
+        bon.kenteken = reparatie.getKeuring().getAuto().getKenteken();
+        bon.klantNaam = reparatie.getKeuring().getAuto().getKlant().getNaam();
+
+        BigDecimal totaal = Keuring.KEURINGS_BEDRAG;
+        bon.keuringBedragExcl = Keuring.KEURINGS_BEDRAG;
+        bon.keuringBedragIncl = metBtw(Keuring.KEURINGS_BEDRAG);
+
+        // als de klant niet akkoord is betaalt hij alleen de keuring
+        if (reparatie.getStatus() != ReparatieStatus.NIET_UITVOEREN) {
+            for (ReparatieRegel regel : reparatie.getHandelingen()) {
+                BonRegelDto r = new BonRegelDto();
+                r.omschrijving = regel.getReparatieHandeling().getNaam();
+                r.prijsExcl = regel.getReparatieHandeling().getPrijsExclBtw();
+                r.prijsIncl = metBtw(r.prijsExcl);
+                bon.handelingen.add(r);
+                totaal = totaal.add(r.prijsExcl);
+            }
+            for (OverigeHandeling overig : reparatie.getOverigeHandelingen()) {
+                BonRegelDto r = new BonRegelDto();
+                r.omschrijving = overig.getOmschrijving();
+                r.prijsExcl = overig.getPrijsExclBtw();
+                r.prijsIncl = metBtw(r.prijsExcl);
+                bon.overigeHandelingen.add(r);
+                totaal = totaal.add(r.prijsExcl);
+            }
+            for (ReparatieOnderdeel ro : reparatie.getOnderdelen()) {
+                BonOnderdeelRegelDto r = new BonOnderdeelRegelDto();
+                r.naam = ro.getOnderdeel().getNaam();
+                r.aantal = ro.getAantal();
+                r.prijsExcl = ro.getOnderdeel().getPrijsExclBtw().multiply(BigDecimal.valueOf(ro.getAantal()));
+                r.prijsIncl = metBtw(r.prijsExcl);
+                bon.onderdelen.add(r);
+                totaal = totaal.add(r.prijsExcl);
+            }
+        }
+
+        bon.totalExcl = totaal.setScale(2, RoundingMode.HALF_UP);
+        bon.totalIncl = metBtw(totaal);
+        bon.btwBedrag = bon.totalIncl.subtract(bon.totalExcl);
+        bon.betaald = reparatie.isBetaald();
+        return bon;
+    }
+
+    private BigDecimal metBtw(BigDecimal bedrag) {
+        return bedrag.multiply(BigDecimal.ONE.add(BTW)).setScale(2, RoundingMode.HALF_UP);
     }
 
     private Reparatie findReparatie(Long id) {
