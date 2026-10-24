@@ -77,6 +77,11 @@ public class ReparatieController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("/{id}/bon")
+    public ResponseEntity<BonResponseDto> getBon(@PathVariable Long id) {
+        return ResponseEntity.ok(reparatieService.genereerBon(id));
+    }
+
     @PutMapping("/{id}/betaald")
     public ResponseEntity<ReparatieResponseDto> markeerBetaald(@PathVariable Long id) {
         return ResponseEntity.ok(reparatieService.markeerBetaald(id));
