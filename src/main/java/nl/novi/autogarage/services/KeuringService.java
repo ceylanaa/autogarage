@@ -10,6 +10,7 @@ import nl.novi.autogarage.models.Keuring;
 import nl.novi.autogarage.models.KeuringStatus;
 import nl.novi.autogarage.repositories.AutoRepository;
 import nl.novi.autogarage.repositories.KeuringRepository;
+import nl.novi.autogarage.mappers.KeuringMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,22 +21,24 @@ public class KeuringService {
 
     private final KeuringRepository keuringRepository;
     private final AutoRepository autoRepository;
+    private final KeuringMapper keuringMapper;
 
-    public KeuringService(KeuringRepository keuringRepository, AutoRepository autoRepository) {
+    public KeuringService(KeuringRepository keuringRepository, AutoRepository autoRepository, KeuringMapper keuringMapper) {
         this.keuringRepository = keuringRepository;
         this.autoRepository = autoRepository;
+        this.keuringMapper = keuringMapper;
     }
 
     public List<KeuringResponseDto> getAllKeuringen() {
         List<KeuringResponseDto> dtos = new ArrayList<>();
         for (Keuring keuring : keuringRepository.findAll()) {
-            dtos.add(keuringToResponseDto(keuring));
+            dtos.add(keuringMapper.toResponseDto(keuring));
         }
         return dtos;
     }
 
     public KeuringResponseDto getKeuringById(Long id) {
-        return keuringToResponseDto(findKeuring(id));
+        return keuringMapper.toResponseDto(findKeuring(id));
     }
 
     public KeuringResponseDto createKeuring(KeuringRequestDto dto) {
@@ -45,7 +48,7 @@ public class KeuringService {
         keuring.setAuto(auto);
         keuring.setKeuringsDatum(dto.getKeuringsDatum());
         keuring.setStatus(KeuringStatus.GEPLAND);
-        return keuringToResponseDto(keuringRepository.save(keuring));
+        return keuringMapper.toResponseDto(keuringRepository.save(keuring));
     }
 
     public KeuringResponseDto updateKeuringStatus(Long id, KeuringStatusRequestDto dto) {
@@ -58,7 +61,7 @@ public class KeuringService {
         if (dto.getTekortkomingen() != null) {
             keuring.setTekortkomingen(dto.getTekortkomingen());
         }
-        return keuringToResponseDto(keuringRepository.save(keuring));
+        return keuringMapper.toResponseDto(keuringRepository.save(keuring));
     }
 
     public void deleteKeuring(Long id) {
@@ -71,17 +74,5 @@ public class KeuringService {
     private Keuring findKeuring(Long id) {
         return keuringRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Keuring met id " + id + " niet gevonden"));
-    }
-
-    private KeuringResponseDto keuringToResponseDto(Keuring keuring) {
-        KeuringResponseDto dto = new KeuringResponseDto();
-        dto.setId(keuring.getId());
-        dto.setAutoId(keuring.getAuto().getId());
-        dto.setKenteken(keuring.getAuto().getKenteken());
-        dto.setKeuringsDatum(keuring.getKeuringsDatum());
-        dto.setTekortkomingen(keuring.getTekortkomingen());
-        dto.setStatus(keuring.getStatus().name());
-        dto.setKeuringsBedrag(Keuring.KEURINGS_BEDRAG);
-        return dto;
     }
 }

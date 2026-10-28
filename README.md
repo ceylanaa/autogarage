@@ -36,6 +36,7 @@ autogarage/
 │   ├── controllers/           REST controllers (endpoints)
 │   ├── dtos/                  input- en output DTO's
 │   ├── exceptions/            eigen exceptions en GlobalExceptionHandler
+│   ├── mappers/               omzetten van entiteit naar DTO en andersom
 │   ├── models/                entiteiten (JPA)
 │   ├── repositories/          Spring Data JPA repositories
 │   ├── security/              JWT filter, JwtService en SecurityConfig

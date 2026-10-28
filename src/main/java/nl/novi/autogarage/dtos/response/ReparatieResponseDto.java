@@ -11,9 +11,9 @@ public class ReparatieResponseDto {
     private LocalDate reparatieDatum;
     private String status;
     private boolean betaald;
-    public List<ReparatieOnderdeelResponseDto> onderdelen = new ArrayList<>();
-    public List<ReparatieRegelResponseDto> handelingen = new ArrayList<>();
-    public List<OverigeHandelingResponseDto> overigeHandelingen = new ArrayList<>();
+    private List<ReparatieOnderdeelResponseDto> onderdelen = new ArrayList<>();
+    private List<ReparatieRegelResponseDto> handelingen = new ArrayList<>();
+    private List<OverigeHandelingResponseDto> overigeHandelingen = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -53,5 +53,29 @@ public class ReparatieResponseDto {
 
     public void setBetaald(boolean betaald) {
         this.betaald = betaald;
+    }
+
+    public List<ReparatieOnderdeelResponseDto> getOnderdelen() {
+        return onderdelen;
+    }
+
+    public void setOnderdelen(List<ReparatieOnderdeelResponseDto> onderdelen) {
+        this.onderdelen = onderdelen;
+    }
+
+    public List<ReparatieRegelResponseDto> getHandelingen() {
+        return handelingen;
+    }
+
+    public void setHandelingen(List<ReparatieRegelResponseDto> handelingen) {
+        this.handelingen = handelingen;
+    }
+
+    public List<OverigeHandelingResponseDto> getOverigeHandelingen() {
+        return overigeHandelingen;
+    }
+
+    public void setOverigeHandelingen(List<OverigeHandelingResponseDto> overigeHandelingen) {
+        this.overigeHandelingen = overigeHandelingen;
     }
 }

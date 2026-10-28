@@ -8,7 +8,9 @@ import nl.novi.autogarage.repositories.OnderdeelRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import nl.novi.autogarage.mappers.OnderdeelMapper;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -25,6 +27,10 @@ class OnderdeelServiceTest {
 
     @Mock
     OnderdeelRepository onderdeelRepository;
+
+    // echte mapper gebruiken, die hoeft niet gemockt te worden
+    @Spy
+    OnderdeelMapper onderdeelMapper = new OnderdeelMapper();
 
     @InjectMocks
     OnderdeelService onderdeelService;
@@ -56,7 +62,7 @@ class OnderdeelServiceTest {
 
         // Then
         assertEquals(1, result.size());
-        assertEquals("Remblokken set", result.get(0).naam);
+        assertEquals("Remblokken set", result.get(0).getNaam());
     }
 
     @Test

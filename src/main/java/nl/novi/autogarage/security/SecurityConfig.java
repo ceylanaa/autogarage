@@ -31,6 +31,8 @@ public class SecurityConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        // foutpagina van Spring moet bereikbaar blijven, anders krijg je 403 bij fouten
+                        .requestMatchers("/error").permitAll()
                         // alleen backoffice mag nieuwe gebruikers zien
                         .requestMatchers("/gebruikers/**").hasRole("BACKOFFICE")
                         .requestMatchers("/klanten/**").hasRole("KASSAMEDEWERKER")
@@ -46,7 +48,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/onderdelen/**", "/reparatiehandelingen/**").hasAnyRole("BACKOFFICE", "MONTEUR")
                         .requestMatchers("/onderdelen/**").hasRole("BACKOFFICE")
                         .requestMatchers("/reparatiehandelingen/**").hasRole("BACKOFFICE")
-                        .anyRequest().authenticated()
+                        .anyRequest().denyAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
