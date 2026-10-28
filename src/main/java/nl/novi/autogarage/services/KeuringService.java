@@ -10,6 +10,7 @@ import nl.novi.autogarage.models.Keuring;
 import nl.novi.autogarage.models.KeuringStatus;
 import nl.novi.autogarage.repositories.AutoRepository;
 import nl.novi.autogarage.repositories.KeuringRepository;
+import nl.novi.autogarage.mappers.KeuringMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,45 +21,47 @@ public class KeuringService {
 
     private final KeuringRepository keuringRepository;
     private final AutoRepository autoRepository;
+    private final KeuringMapper keuringMapper;
 
-    public KeuringService(KeuringRepository keuringRepository, AutoRepository autoRepository) {
+    public KeuringService(KeuringRepository keuringRepository, AutoRepository autoRepository, KeuringMapper keuringMapper) {
         this.keuringRepository = keuringRepository;
         this.autoRepository = autoRepository;
+        this.keuringMapper = keuringMapper;
     }
 
     public List<KeuringResponseDto> getAllKeuringen() {
         List<KeuringResponseDto> dtos = new ArrayList<>();
         for (Keuring keuring : keuringRepository.findAll()) {
-            dtos.add(keuringToResponseDto(keuring));
+            dtos.add(keuringMapper.toResponseDto(keuring));
         }
         return dtos;
     }
 
     public KeuringResponseDto getKeuringById(Long id) {
-        return keuringToResponseDto(findKeuring(id));
+        return keuringMapper.toResponseDto(findKeuring(id));
     }
 
     public KeuringResponseDto createKeuring(KeuringRequestDto dto) {
-        Auto auto = autoRepository.findById(dto.autoId)
-                .orElseThrow(() -> new RecordNotFoundException("Auto met id " + dto.autoId + " niet gevonden"));
+        Auto auto = autoRepository.findById(dto.getAutoId())
+                .orElseThrow(() -> new RecordNotFoundException("Auto met id " + dto.getAutoId() + " niet gevonden"));
         Keuring keuring = new Keuring();
         keuring.setAuto(auto);
-        keuring.setKeuringsDatum(dto.keuringsDatum);
+        keuring.setKeuringsDatum(dto.getKeuringsDatum());
         keuring.setStatus(KeuringStatus.GEPLAND);
-        return keuringToResponseDto(keuringRepository.save(keuring));
+        return keuringMapper.toResponseDto(keuringRepository.save(keuring));
     }
 
     public KeuringResponseDto updateKeuringStatus(Long id, KeuringStatusRequestDto dto) {
         Keuring keuring = findKeuring(id);
         try {
-            keuring.setStatus(KeuringStatus.valueOf(dto.status.toUpperCase()));
+            keuring.setStatus(KeuringStatus.valueOf(dto.getStatus().toUpperCase()));
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Ongeldige status: " + dto.status);
+            throw new BadRequestException("Ongeldige status: " + dto.getStatus());
         }
-        if (dto.tekortkomingen != null) {
-            keuring.setTekortkomingen(dto.tekortkomingen);
+        if (dto.getTekortkomingen() != null) {
+            keuring.setTekortkomingen(dto.getTekortkomingen());
         }
-        return keuringToResponseDto(keuringRepository.save(keuring));
+        return keuringMapper.toResponseDto(keuringRepository.save(keuring));
     }
 
     public void deleteKeuring(Long id) {
@@ -71,17 +74,5 @@ public class KeuringService {
     private Keuring findKeuring(Long id) {
         return keuringRepository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Keuring met id " + id + " niet gevonden"));
-    }
-
-    private KeuringResponseDto keuringToResponseDto(Keuring keuring) {
-        KeuringResponseDto dto = new KeuringResponseDto();
-        dto.id = keuring.getId();
-        dto.autoId = keuring.getAuto().getId();
-        dto.kenteken = keuring.getAuto().getKenteken();
-        dto.keuringsDatum = keuring.getKeuringsDatum();
-        dto.tekortkomingen = keuring.getTekortkomingen();
-        dto.status = keuring.getStatus().name();
-        dto.keuringsBedrag = Keuring.KEURINGS_BEDRAG;
-        return dto;
     }
 }

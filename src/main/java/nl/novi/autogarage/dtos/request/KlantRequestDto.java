@@ -5,9 +5,33 @@ import jakarta.validation.constraints.*;
 public class KlantRequestDto {
 
     @NotBlank(message = "naam is verplicht")
-    public String naam;
+    private String naam;
     @NotBlank(message = "telefoonnummer is verplicht")
-    public String telefoonnummer;
+    private String telefoonnummer;
     @Email
-    public String emailadres;
+    private String emailadres;
+
+    public String getNaam() {
+        return naam;
+    }
+
+    public void setNaam(String naam) {
+        this.naam = naam;
+    }
+
+    public String getTelefoonnummer() {
+        return telefoonnummer;
+    }
+
+    public void setTelefoonnummer(String telefoonnummer) {
+        this.telefoonnummer = telefoonnummer;
+    }
+
+    public String getEmailadres() {
+        return emailadres;
+    }
+
+    public void setEmailadres(String emailadres) {
+        this.emailadres = emailadres;
+    }
 }

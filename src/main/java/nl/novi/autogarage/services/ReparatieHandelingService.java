@@ -5,6 +5,7 @@ import nl.novi.autogarage.dtos.response.ReparatieHandelingResponseDto;
 import nl.novi.autogarage.exceptions.RecordNotFoundException;
 import nl.novi.autogarage.models.ReparatieHandeling;
 import nl.novi.autogarage.repositories.ReparatieHandelingRepository;
+import nl.novi.autogarage.mappers.ReparatieHandelingMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,35 +15,35 @@ import java.util.List;
 public class ReparatieHandelingService {
 
     private final ReparatieHandelingRepository repository;
+    private final ReparatieHandelingMapper reparatieHandelingMapper;
 
-    public ReparatieHandelingService(ReparatieHandelingRepository repository) {
+    public ReparatieHandelingService(ReparatieHandelingRepository repository, ReparatieHandelingMapper reparatieHandelingMapper) {
         this.repository = repository;
+        this.reparatieHandelingMapper = reparatieHandelingMapper;
     }
 
     public List<ReparatieHandelingResponseDto> getAllReparatieHandelingen() {
         List<ReparatieHandelingResponseDto> dtos = new ArrayList<>();
         for (ReparatieHandeling handeling : repository.findAll()) {
-            dtos.add(toDto(handeling));
+            dtos.add(reparatieHandelingMapper.toResponseDto(handeling));
         }
         return dtos;
     }
 
     public ReparatieHandelingResponseDto getReparatieHandelingById(Long id) {
-        return toDto(findHandeling(id));
+        return reparatieHandelingMapper.toResponseDto(findHandeling(id));
     }
 
     public ReparatieHandelingResponseDto createReparatieHandeling(ReparatieHandelingRequestDto dto) {
         ReparatieHandeling handeling = new ReparatieHandeling();
-        handeling.setNaam(dto.naam);
-        handeling.setPrijsExclBtw(dto.prijsExclBtw);
-        return toDto(repository.save(handeling));
+        reparatieHandelingMapper.vulEntity(handeling, dto);
+        return reparatieHandelingMapper.toResponseDto(repository.save(handeling));
     }
 
     public ReparatieHandelingResponseDto updateReparatieHandeling(Long id, ReparatieHandelingRequestDto dto) {
         ReparatieHandeling handeling = findHandeling(id);
-        handeling.setNaam(dto.naam);
-        handeling.setPrijsExclBtw(dto.prijsExclBtw);
-        return toDto(repository.save(handeling));
+        reparatieHandelingMapper.vulEntity(handeling, dto);
+        return reparatieHandelingMapper.toResponseDto(repository.save(handeling));
     }
 
     public void deleteReparatieHandeling(Long id) {
@@ -55,13 +56,5 @@ public class ReparatieHandelingService {
     private ReparatieHandeling findHandeling(Long id) {
         return repository.findById(id)
                 .orElseThrow(() -> new RecordNotFoundException("Reparatiehandeling met id " + id + " niet gevonden"));
-    }
-
-    private ReparatieHandelingResponseDto toDto(ReparatieHandeling handeling) {
-        ReparatieHandelingResponseDto dto = new ReparatieHandelingResponseDto();
-        dto.id = handeling.getId();
-        dto.naam = handeling.getNaam();
-        dto.prijsExclBtw = handeling.getPrijsExclBtw();
-        return dto;
     }
 }

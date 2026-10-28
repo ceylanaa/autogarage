@@ -8,7 +8,9 @@ import nl.novi.autogarage.repositories.OnderdeelRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import nl.novi.autogarage.mappers.OnderdeelMapper;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -26,6 +28,10 @@ class OnderdeelServiceTest {
     @Mock
     OnderdeelRepository onderdeelRepository;
 
+    // echte mapper gebruiken, die hoeft niet gemockt te worden
+    @Spy
+    OnderdeelMapper onderdeelMapper = new OnderdeelMapper();
+
     @InjectMocks
     OnderdeelService onderdeelService;
 
@@ -41,9 +47,9 @@ class OnderdeelServiceTest {
         remblokken.setVoorraad(20);
 
         requestDto = new OnderdeelRequestDto();
-        requestDto.naam = "Remblokken set";
-        requestDto.prijsExclBtw = new BigDecimal("45.00");
-        requestDto.voorraad = 20;
+        requestDto.setNaam("Remblokken set");
+        requestDto.setPrijsExclBtw(new BigDecimal("45.00"));
+        requestDto.setVoorraad(20);
     }
 
     @Test
@@ -56,7 +62,7 @@ class OnderdeelServiceTest {
 
         // Then
         assertEquals(1, result.size());
-        assertEquals("Remblokken set", result.get(0).naam);
+        assertEquals("Remblokken set", result.get(0).getNaam());
     }
 
     @Test
@@ -68,9 +74,9 @@ class OnderdeelServiceTest {
         OnderdeelResponseDto result = onderdeelService.getOnderdeelById(1L);
 
         // Then
-        assertEquals(1L, result.id);
-        assertEquals(new BigDecimal("45.00"), result.prijsExclBtw);
-        assertEquals(20, result.voorraad);
+        assertEquals(1L, result.getId());
+        assertEquals(new BigDecimal("45.00"), result.getPrijsExclBtw());
+        assertEquals(20, result.getVoorraad());
     }
 
     @Test
@@ -91,16 +97,16 @@ class OnderdeelServiceTest {
         OnderdeelResponseDto result = onderdeelService.createOnderdeel(requestDto);
 
         // Then
-        assertEquals(1L, result.id);
-        assertEquals("Remblokken set", result.naam);
+        assertEquals(1L, result.getId());
+        assertEquals("Remblokken set", result.getNaam());
         verify(onderdeelRepository).save(any(Onderdeel.class));
     }
 
     @Test
     void updateOnderdeel_bestaandOnderdeel_returnsDto() {
         // Given
-        requestDto.voorraad = 5;
-        requestDto.prijsExclBtw = new BigDecimal("50.00");
+        requestDto.setVoorraad(5);
+        requestDto.setPrijsExclBtw(new BigDecimal("50.00"));
         when(onderdeelRepository.findById(1L)).thenReturn(Optional.of(remblokken));
         when(onderdeelRepository.save(any(Onderdeel.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -108,8 +114,8 @@ class OnderdeelServiceTest {
         OnderdeelResponseDto result = onderdeelService.updateOnderdeel(1L, requestDto);
 
         // Then
-        assertEquals(5, result.voorraad);
-        assertEquals(new BigDecimal("50.00"), result.prijsExclBtw);
+        assertEquals(5, result.getVoorraad());
+        assertEquals(new BigDecimal("50.00"), result.getPrijsExclBtw());
     }
 
     @Test

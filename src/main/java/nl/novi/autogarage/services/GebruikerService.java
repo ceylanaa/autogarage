@@ -8,6 +8,7 @@ import nl.novi.autogarage.models.Rol;
 import nl.novi.autogarage.repositories.GebruikerRepository;
 import nl.novi.autogarage.repositories.RolRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import nl.novi.autogarage.mappers.GebruikerMapper;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,40 +20,34 @@ public class GebruikerService {
     private final GebruikerRepository gebruikerRepository;
     private final RolRepository rolRepository;
     private final PasswordEncoder passwordEncoder;
+    private final GebruikerMapper gebruikerMapper;
 
-    public GebruikerService(GebruikerRepository gebruikerRepository, RolRepository rolRepository, PasswordEncoder passwordEncoder) {
+    public GebruikerService(GebruikerRepository gebruikerRepository, RolRepository rolRepository, PasswordEncoder passwordEncoder, GebruikerMapper gebruikerMapper) {
         this.gebruikerRepository = gebruikerRepository;
         this.rolRepository = rolRepository;
         this.passwordEncoder = passwordEncoder;
+        this.gebruikerMapper = gebruikerMapper;
     }
 
     public GebruikerResponseDto registerGebruiker(GebruikerRequestDto dto) {
-        if (gebruikerRepository.existsByGebruikersnaam(dto.gebruikersnaam)) {
-            throw new BadRequestException("Gebruikersnaam " + dto.gebruikersnaam + " is al in gebruik");
+        if (gebruikerRepository.existsByGebruikersnaam(dto.getGebruikersnaam())) {
+            throw new BadRequestException("Gebruikersnaam " + dto.getGebruikersnaam() + " is al in gebruik");
         }
-        Rol rol = rolRepository.findByNaam(dto.rolNaam.toUpperCase())
-                .orElseThrow(() -> new BadRequestException("Rol " + dto.rolNaam + " bestaat niet"));
+        Rol rol = rolRepository.findByNaam(dto.getRolNaam().toUpperCase())
+                .orElseThrow(() -> new BadRequestException("Rol " + dto.getRolNaam() + " bestaat niet"));
 
         Gebruiker gebruiker = new Gebruiker();
-        gebruiker.setGebruikersnaam(dto.gebruikersnaam);
-        gebruiker.setWachtwoord(passwordEncoder.encode(dto.wachtwoord));
+        gebruiker.setGebruikersnaam(dto.getGebruikersnaam());
+        gebruiker.setWachtwoord(passwordEncoder.encode(dto.getWachtwoord()));
         gebruiker.setRol(rol);
-        return toDto(gebruikerRepository.save(gebruiker));
+        return gebruikerMapper.toResponseDto(gebruikerRepository.save(gebruiker));
     }
 
     public List<GebruikerResponseDto> getAllGebruikers() {
         List<GebruikerResponseDto> dtos = new ArrayList<>();
         for (Gebruiker g : gebruikerRepository.findAll()) {
-            dtos.add(toDto(g));
+            dtos.add(gebruikerMapper.toResponseDto(g));
         }
         return dtos;
-    }
-
-    private GebruikerResponseDto toDto(Gebruiker gebruiker) {
-        GebruikerResponseDto dto = new GebruikerResponseDto();
-        dto.id = gebruiker.getId();
-        dto.gebruikersnaam = gebruiker.getGebruikersnaam();
-        dto.rolNaam = gebruiker.getRol().getNaam();
-        return dto;
     }
 }

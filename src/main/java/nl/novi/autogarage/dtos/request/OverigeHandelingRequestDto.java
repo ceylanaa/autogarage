@@ -7,8 +7,24 @@ import java.math.BigDecimal;
 public class OverigeHandelingRequestDto {
 
     @NotBlank
-    public String omschrijving;
+    private String omschrijving;
     @NotNull
     @PositiveOrZero
-    public BigDecimal prijsExclBtw;
+    private BigDecimal prijsExclBtw;
+
+    public String getOmschrijving() {
+        return omschrijving;
+    }
+
+    public void setOmschrijving(String omschrijving) {
+        this.omschrijving = omschrijving;
+    }
+
+    public BigDecimal getPrijsExclBtw() {
+        return prijsExclBtw;
+    }
+
+    public void setPrijsExclBtw(BigDecimal prijsExclBtw) {
+        this.prijsExclBtw = prijsExclBtw;
+    }
 }

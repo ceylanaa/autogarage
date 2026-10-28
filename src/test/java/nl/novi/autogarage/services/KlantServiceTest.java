@@ -8,7 +8,9 @@ import nl.novi.autogarage.repositories.KlantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import nl.novi.autogarage.mappers.KlantMapper;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -25,6 +27,10 @@ class KlantServiceTest {
     @Mock
     KlantRepository klantRepository;
 
+    // echte mapper gebruiken, die hoeft niet gemockt te worden
+    @Spy
+    KlantMapper klantMapper = new KlantMapper();
+
     @InjectMocks
     KlantService klantService;
 
@@ -40,9 +46,9 @@ class KlantServiceTest {
         klant2.setId(2L);
 
         requestDto = new KlantRequestDto();
-        requestDto.naam = "Jan de Vries";
-        requestDto.telefoonnummer = "0612345678";
-        requestDto.emailadres = "jan@mail.nl";
+        requestDto.setNaam("Jan de Vries");
+        requestDto.setTelefoonnummer("0612345678");
+        requestDto.setEmailadres("jan@mail.nl");
     }
 
     @Test
@@ -55,8 +61,8 @@ class KlantServiceTest {
 
         // Then
         assertEquals(2, result.size());
-        assertEquals("Jan de Vries", result.get(0).naam);
-        assertEquals("Piet Bakker", result.get(1).naam);
+        assertEquals("Jan de Vries", result.get(0).getNaam());
+        assertEquals("Piet Bakker", result.get(1).getNaam());
     }
 
     @Test
@@ -68,10 +74,10 @@ class KlantServiceTest {
         KlantResponseDto result = klantService.getKlantById(1L);
 
         // Then
-        assertEquals(1L, result.id);
-        assertEquals("Jan de Vries", result.naam);
-        assertEquals("0612345678", result.telefoonnummer);
-        assertEquals("jan@mail.nl", result.emailadres);
+        assertEquals(1L, result.getId());
+        assertEquals("Jan de Vries", result.getNaam());
+        assertEquals("0612345678", result.getTelefoonnummer());
+        assertEquals("jan@mail.nl", result.getEmailadres());
     }
 
     @Test
@@ -92,15 +98,15 @@ class KlantServiceTest {
         KlantResponseDto result = klantService.createKlant(requestDto);
 
         // Then
-        assertEquals(1L, result.id);
-        assertEquals("Jan de Vries", result.naam);
+        assertEquals(1L, result.getId());
+        assertEquals("Jan de Vries", result.getNaam());
         verify(klantRepository, times(1)).save(any(Klant.class));
     }
 
     @Test
     void updateKlant_bestaandeKlant_returnsDto() {
         // Given
-        requestDto.naam = "Jan de Vries Jr";
+        requestDto.setNaam("Jan de Vries Jr");
         when(klantRepository.findById(1L)).thenReturn(Optional.of(klant1));
         when(klantRepository.save(any(Klant.class))).thenAnswer(i -> i.getArgument(0));
 
@@ -108,8 +114,8 @@ class KlantServiceTest {
         KlantResponseDto result = klantService.updateKlant(1L, requestDto);
 
         // Then
-        assertEquals("Jan de Vries Jr", result.naam);
-        assertEquals(1L, result.id);
+        assertEquals("Jan de Vries Jr", result.getNaam());
+        assertEquals(1L, result.getId());
     }
 
     @Test

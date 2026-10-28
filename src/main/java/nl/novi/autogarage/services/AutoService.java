@@ -9,6 +9,7 @@ import nl.novi.autogarage.models.Klant;
 import nl.novi.autogarage.repositories.AutoRepository;
 import nl.novi.autogarage.repositories.KlantRepository;
 import org.springframework.core.io.Resource;
+import nl.novi.autogarage.mappers.AutoMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,38 +22,40 @@ public class AutoService {
     private final AutoRepository autoRepository;
     private final KlantRepository klantRepository;
     private final FileStorageService fileStorageService;
+    private final AutoMapper autoMapper;
 
-    public AutoService(AutoRepository autoRepository, KlantRepository klantRepository, FileStorageService fileStorageService) {
+    public AutoService(AutoRepository autoRepository, KlantRepository klantRepository, FileStorageService fileStorageService, AutoMapper autoMapper) {
         this.autoRepository = autoRepository;
         this.klantRepository = klantRepository;
         this.fileStorageService = fileStorageService;
+        this.autoMapper = autoMapper;
     }
 
     public List<AutoResponseDto> getAllAutos() {
         List<AutoResponseDto> dtos = new ArrayList<>();
         for (Auto auto : autoRepository.findAll()) {
-            dtos.add(autoToResponseDto(auto));
+            dtos.add(autoMapper.toResponseDto(auto));
         }
         return dtos;
     }
 
     public AutoResponseDto getAutoById(Long id) {
-        return autoToResponseDto(findAuto(id));
+        return autoMapper.toResponseDto(findAuto(id));
     }
 
     public AutoResponseDto createAuto(AutoRequestDto dto) {
-        if (autoRepository.existsByKenteken(dto.kenteken)) {
-            throw new BadRequestException("Er bestaat al een auto met kenteken " + dto.kenteken);
+        if (autoRepository.existsByKenteken(dto.getKenteken())) {
+            throw new BadRequestException("Er bestaat al een auto met kenteken " + dto.getKenteken());
         }
         Auto auto = new Auto();
         vulAuto(auto, dto);
-        return autoToResponseDto(autoRepository.save(auto));
+        return autoMapper.toResponseDto(autoRepository.save(auto));
     }
 
     public AutoResponseDto updateAuto(Long id, AutoRequestDto dto) {
         Auto auto = findAuto(id);
         vulAuto(auto, dto);
-        return autoToResponseDto(autoRepository.save(auto));
+        return autoMapper.toResponseDto(autoRepository.save(auto));
     }
 
     public void deleteAuto(Long id) {
@@ -91,23 +94,11 @@ public class AutoService {
     }
 
     private void vulAuto(Auto auto, AutoRequestDto dto) {
-        Klant klant = klantRepository.findById(dto.klantId)
-                .orElseThrow(() -> new RecordNotFoundException("Klant met id " + dto.klantId + " niet gevonden"));
-        auto.setKenteken(dto.kenteken);
-        auto.setMerk(dto.merk);
-        auto.setModel(dto.model);
+        Klant klant = klantRepository.findById(dto.getKlantId())
+                .orElseThrow(() -> new RecordNotFoundException("Klant met id " + dto.getKlantId() + " niet gevonden"));
+        auto.setKenteken(dto.getKenteken());
+        auto.setMerk(dto.getMerk());
+        auto.setModel(dto.getModel());
         auto.setKlant(klant);
-    }
-
-    private AutoResponseDto autoToResponseDto(Auto auto) {
-        AutoResponseDto dto = new AutoResponseDto();
-        dto.id = auto.getId();
-        dto.kenteken = auto.getKenteken();
-        dto.merk = auto.getMerk();
-        dto.model = auto.getModel();
-        dto.klantId = auto.getKlant().getId();
-        dto.klantNaam = auto.getKlant().getNaam();
-        dto.heeftAutopapier = auto.getAutopapierNaam() != null;
-        return dto;
     }
 }
