@@ -1,0 +1,1635 @@
+{
+  "info": {
+    "name": "Autogarage API - Abdullah Ceylan",
+    "description": "Postman collectie voor de Autogarage web-API (NOVI Eindopdracht Backend). Start de applicatie, vul de variabele testWachtwoord in met het wachtwoord van de testgebruikers (zie README) en voer eerst de drie login-verzoeken uit de map 'Openbaar' uit. De tokens worden dan automatisch opgeslagen.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Openbaar (geen token nodig)",
+      "description": "Deze endpoints zijn voor iedereen bereikbaar. Hiermee log je in en krijg je een JWT-token terug.",
+      "item": [
+        {
+          "name": "Inloggen als kassamedewerker",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Logt de testgebruiker 'kassamedewerker' in en geeft een JWT-token terug. Dit token stuur je bij alle andere verzoeken mee in de header Authorization: Bearer <token>. Het token is 24 uur geldig. In Postman wordt het token automatisch opgeslagen in de variabele token_kassamedewerker.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gebruikersnaam\": \"kassamedewerker\",\n  \"wachtwoord\": \"{{testWachtwoord}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// token opslaan zodat de andere verzoeken het kunnen gebruiken",
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set('token_kassamedewerker', pm.response.json().token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inloggen als monteur",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Logt de testgebruiker 'monteur' in en geeft een JWT-token terug. Dit token stuur je bij alle andere verzoeken mee in de header Authorization: Bearer <token>. Het token is 24 uur geldig. In Postman wordt het token automatisch opgeslagen in de variabele token_monteur.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gebruikersnaam\": \"monteur\",\n  \"wachtwoord\": \"{{testWachtwoord}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// token opslaan zodat de andere verzoeken het kunnen gebruiken",
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set('token_monteur', pm.response.json().token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Inloggen als backoffice",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Logt de testgebruiker 'backoffice' in en geeft een JWT-token terug. Dit token stuur je bij alle andere verzoeken mee in de header Authorization: Bearer <token>. Het token is 24 uur geldig. In Postman wordt het token automatisch opgeslagen in de variabele token_backoffice.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gebruikersnaam\": \"backoffice\",\n  \"wachtwoord\": \"{{testWachtwoord}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": [],
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// token opslaan zodat de andere verzoeken het kunnen gebruiken",
+                  "if (pm.response.code === 200) {",
+                  "    pm.collectionVariables.set('token_backoffice', pm.response.json().token);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Gebruiker registreren",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "description": "Maakt een nieuwe gebruiker aan met een van de drie rollen (KASSAMEDEWERKER, MONTEUR of BACKOFFICE). Het wachtwoord wordt met BCrypt versleuteld opgeslagen en komt nooit terug in de response.",
+            "auth": {
+              "type": "noauth"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"gebruikersnaam\": \"nieuwemonteur\",\n  \"wachtwoord\": \"geheim123\",\n  \"rolNaam\": \"MONTEUR\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Kassamedewerker",
+      "description": "Alleen de rol KASSAMEDEWERKER heeft toegang. De kassamedewerker beheert klanten en auto's, plant keuringen in, maakt de bon en registreert de betaling.",
+      "item": [
+        {
+          "name": "Alle klanten ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/klanten",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "klanten"
+              ]
+            },
+            "description": "Geeft een lijst met alle klanten van de garage.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Klant ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/klanten/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "klanten",
+                "1"
+              ]
+            },
+            "description": "Geeft één klant op basis van het id.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Klant aanmaken",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/klanten",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "klanten"
+              ]
+            },
+            "description": "Maakt een nieuwe klant aan. Naam en telefoonnummer zijn verplicht, het e-mailadres moet geldig zijn als het wordt ingevuld. De response bevat een Location-header naar de nieuwe klant.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"naam\": \"Sanne Jansen\",\n  \"telefoonnummer\": \"0699887766\",\n  \"emailadres\": \"sanne@mail.nl\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Klant wijzigen",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/klanten/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "klanten",
+                "1"
+              ]
+            },
+            "description": "Wijzigt de gegevens van een bestaande klant.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"naam\": \"Jan de Vries\",\n  \"telefoonnummer\": \"0611111111\",\n  \"emailadres\": \"jan.devries@mail.nl\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Klant verwijderen",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/klanten/4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "klanten",
+                "4"
+              ]
+            },
+            "description": "Verwijdert een klant.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Alle auto's ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/autos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autos"
+              ]
+            },
+            "description": "Geeft een lijst met alle auto's, inclusief naam van de eigenaar en of er autopapieren zijn geüpload.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auto ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/autos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autos",
+                "1"
+              ]
+            },
+            "description": "Geeft één auto op basis van het id.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auto aanmaken",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autos",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autos"
+              ]
+            },
+            "description": "Registreert een nieuwe auto bij een bestaande klant. Kenteken, merk en klantId zijn verplicht.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kenteken\": \"KL-321-M\",\n  \"merk\": \"Ford\",\n  \"model\": \"Fiesta\",\n  \"klantId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auto wijzigen",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/autos/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autos",
+                "1"
+              ]
+            },
+            "description": "Wijzigt de gegevens van een auto.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"kenteken\": \"AB-123-C\",\n  \"merk\": \"Volkswagen\",\n  \"model\": \"Golf Variant\",\n  \"klantId\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auto verwijderen",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/autos/4",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autos",
+                "4"
+              ]
+            },
+            "description": "Verwijdert een auto.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Autopapier uploaden",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/autos/1/autopapier",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autos",
+                "1",
+                "autopapier"
+              ]
+            },
+            "description": "Uploadt de autopapieren van een auto als pdf. Het verzoek is form-data met de key 'bestand'. Alleen pdf-bestanden tot 5 MB worden geaccepteerd. Kies in Postman bij Body > form-data zelf een pdf-bestand.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "bestand",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Autopapier downloaden",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/autos/1/autopapier",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "autos",
+                "1",
+                "autopapier"
+              ]
+            },
+            "description": "Downloadt de eerder geüploade autopapieren. De response is het pdf-bestand zelf (Content-Type application/pdf) met een Content-Disposition header, zodat de browser of Postman het als bestand opslaat.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Keuring inplannen",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/keuringen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "keuringen"
+              ]
+            },
+            "description": "Plant een APK-keuring in voor een auto. De keuring krijgt de status GEPLAND en kost altijd 45,00 euro excl. btw.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"autoId\": 3,\n  \"keuringsDatum\": \"2026-11-05\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Keuring verwijderen",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/keuringen/3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "keuringen",
+                "3"
+              ]
+            },
+            "description": "Verwijdert een keuring.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Bon genereren",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/bon",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "bon"
+              ]
+            },
+            "description": "Maakt de bon voor een reparatie. De bon bevat de keuring (45,00 euro), alle handelingen, overige handelingen en onderdelen, steeds excl. en incl. 21% btw, plus de totalen. Heeft de klant geen akkoord gegeven (status NIET_UITVOEREN), dan staat alleen de keuring op de bon.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Betaling registreren",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/betaald",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "betaald"
+              ]
+            },
+            "description": "Zet de reparatie op betaald nadat de klant heeft afgerekend. Er is geen body nodig.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_kassamedewerker}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Monteur",
+      "description": "Alleen de rol MONTEUR heeft toegang. De monteur legt de uitslag van een keuring vast.",
+      "item": [
+        {
+          "name": "Keuringsuitslag vastleggen",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/keuringen/2/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "keuringen",
+                "2",
+                "status"
+              ]
+            },
+            "description": "Legt de uitslag van een keuring vast. Mogelijke statussen: GEPLAND, GEKEURD, KLANT_AKKOORD en KLANT_NIET_AKKOORD. Bij tekortkomingen beschrijft de monteur wat er mis is.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"GEKEURD\",\n  \"tekortkomingen\": \"Remschijven versleten\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Backoffice",
+      "description": "Alleen de rol BACKOFFICE heeft toegang. De backoffice beheert gebruikers, de onderdelen (met voorraad) en de lijst met reparatiehandelingen.",
+      "item": [
+        {
+          "name": "Alle gebruikers ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/gebruikers",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "gebruikers"
+              ]
+            },
+            "description": "Geeft een overzicht van alle gebruikers en hun rol. Wachtwoorden worden niet teruggegeven.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_backoffice}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Onderdeel aanmaken",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/onderdelen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "onderdelen"
+              ]
+            },
+            "description": "Voegt een nieuw onderdeel toe aan de voorraad. Prijs en voorraad mogen niet negatief zijn.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_backoffice}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"naam\": \"Bougie\",\n  \"prijsExclBtw\": 8.5,\n  \"voorraad\": 40\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Onderdeel wijzigen",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/onderdelen/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "onderdelen",
+                "1"
+              ]
+            },
+            "description": "Wijzigt naam, prijs of voorraad van een onderdeel, bijvoorbeeld als er een nieuwe levering binnenkomt.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_backoffice}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"naam\": \"Remblokken set\",\n  \"prijsExclBtw\": 47.5,\n  \"voorraad\": 35\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Onderdeel verwijderen",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/onderdelen/6",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "onderdelen",
+                "6"
+              ]
+            },
+            "description": "Verwijdert een onderdeel.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_backoffice}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reparatiehandeling aanmaken",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reparatiehandelingen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparatiehandelingen"
+              ]
+            },
+            "description": "Voegt een vaste handeling met prijs toe aan de lijst.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_backoffice}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"naam\": \"Accu vervangen\",\n  \"prijsExclBtw\": 35.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reparatiehandeling wijzigen",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reparatiehandelingen/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparatiehandelingen",
+                "2"
+              ]
+            },
+            "description": "Wijzigt de naam of prijs van een handeling.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_backoffice}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"naam\": \"Olie verversen\",\n  \"prijsExclBtw\": 55.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reparatiehandeling verwijderen",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparatiehandelingen/5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparatiehandelingen",
+                "5"
+              ]
+            },
+            "description": "Verwijdert een handeling.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_backoffice}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Kassamedewerker en Monteur",
+      "description": "Deze endpoints zijn bereikbaar voor zowel KASSAMEDEWERKER als MONTEUR. In de Postman collectie staat het token van de monteur ingesteld, maar het token van de kassamedewerker werkt ook.",
+      "item": [
+        {
+          "name": "Alle keuringen ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/keuringen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "keuringen"
+              ]
+            },
+            "description": "Geeft alle keuringen met status en eventuele tekortkomingen.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Keuring ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/keuringen/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "keuringen",
+                "1"
+              ]
+            },
+            "description": "Geeft één keuring op basis van het id.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Alle reparaties ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties"
+              ]
+            },
+            "description": "Geeft alle reparaties met hun onderdelen, handelingen en overige handelingen.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reparatie ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1"
+              ]
+            },
+            "description": "Geeft één reparatie op basis van het id.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reparatie aanmaken",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties"
+              ]
+            },
+            "description": "Maakt een reparatie aan voor een keuring. Per keuring kan maar één reparatie bestaan. De reparatiedatum is optioneel.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"keuringId\": 2,\n  \"reparatieDatum\": \"2026-11-04\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reparatiestatus wijzigen",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/status",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "status"
+              ]
+            },
+            "description": "Wijzigt de status van een reparatie. Mogelijke statussen: GEPLAND, IN_BEHANDELING, GEREED en NIET_UITVOEREN.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_BEHANDELING\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Onderdeel toevoegen aan reparatie",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/onderdelen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "onderdelen"
+              ]
+            },
+            "description": "Voegt een onderdeel met aantal toe aan een reparatie. De voorraad van het onderdeel wordt met dit aantal verlaagd.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"onderdeelId\": 3,\n  \"aantal\": 1\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Onderdeel verwijderen uit reparatie",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/onderdelen/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "onderdelen",
+                "2"
+              ]
+            },
+            "description": "Haalt een onderdeelregel weg uit de reparatie.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Handeling toevoegen aan reparatie",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/handelingen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "handelingen"
+              ]
+            },
+            "description": "Voegt een vaste reparatiehandeling uit de lijst toe aan de reparatie.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reparatieHandelingId\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Handeling verwijderen uit reparatie",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/handelingen/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "handelingen",
+                "2"
+              ]
+            },
+            "description": "Haalt een handeling weg uit de reparatie.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Overige handeling toevoegen",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/overigehandelingen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "overigehandelingen"
+              ]
+            },
+            "description": "Voegt een handeling toe die niet in de vaste lijst staat, met een eigen omschrijving en prijs.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"omschrijving\": \"Koplamp afstellen\",\n  \"prijsExclBtw\": 15.0\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Overige handeling verwijderen",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparaties/1/overigehandelingen/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparaties",
+                "1",
+                "overigehandelingen",
+                "1"
+              ]
+            },
+            "description": "Haalt een overige handeling weg uit de reparatie.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Backoffice en Monteur (alleen lezen)",
+      "description": "De monteur moet onderdelen en handelingen kunnen opzoeken om ze aan een reparatie toe te voegen. Daarom mogen BACKOFFICE en MONTEUR deze GET-endpoints gebruiken. Aanpassen mag alleen de backoffice.",
+      "item": [
+        {
+          "name": "Alle onderdelen ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/onderdelen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "onderdelen"
+              ]
+            },
+            "description": "Geeft alle onderdelen met prijs en huidige voorraad.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Onderdeel ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/onderdelen/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "onderdelen",
+                "1"
+              ]
+            },
+            "description": "Geeft één onderdeel op basis van het id.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Alle reparatiehandelingen ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparatiehandelingen",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparatiehandelingen"
+              ]
+            },
+            "description": "Geeft de lijst met vaste handelingen en hun prijs.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reparatiehandeling ophalen",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reparatiehandelingen/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "reparatiehandelingen",
+                "1"
+              ]
+            },
+            "description": "Geeft één handeling op basis van het id.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token_monteur}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "testWachtwoord",
+      "value": "VUL_HIER_HET_TESTWACHTWOORD_IN"
+    },
+    {
+      "key": "token_kassamedewerker",
+      "value": ""
+    },
+    {
+      "key": "token_monteur",
+      "value": ""
+    },
+    {
+      "key": "token_backoffice",
+      "value": ""
+    }
+  ]
+}
