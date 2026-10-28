@@ -1,0 +1,46 @@
+@startuml
+skinparam shadowing false
+skinparam sequenceMessageAlign left
+title Sequentiediagram 1: autopapier (pdf) uploaden bij een auto
+actor Kassamedewerker as K
+participant "JwtAuthFilter" as F
+participant "AutoController" as C
+participant "AutoService" as S
+participant "AutoRepository" as R
+participant "FileStorageService" as FS
+database "PostgreSQL" as DB
+
+K -> F : POST /autos/{id}/autopapier\nAuthorization: Bearer <token>\nform-data: bestand (pdf)
+F -> F : jwtUtil.extractUsername(token)\njwtUtil.isTokenValid(token, userDetails)
+alt token ongeldig of rol is geen KASSAMEDEWERKER
+  F --> K : 403 Forbidden
+else geldig
+  F -> C : uploadAutopapier(id, bestand)
+  C -> S : slaAutopapierOp(id, bestand)
+  S -> R : findById(id)
+  R -> DB : SELECT * FROM autos WHERE id = ?
+  DB --> R : rij
+  alt auto niet gevonden
+    R --> S : Optional.empty()
+    S --> C : throw RecordNotFoundException
+    C --> K : 404 Not Found\n"Auto met id {id} niet gevonden"
+  else auto gevonden
+    R --> S : Optional<Auto>
+    alt bestand leeg of geen .pdf
+      S --> C : throw BadRequestException
+      C --> K : 400 Bad Request\n"Alleen PDF bestanden zijn toegestaan"
+    else geldige pdf
+      S -> FS : slaBestandOp(bestand, "autopapier_" + id + ".pdf")
+      FS -> FS : Files.copy(...) naar ./uploads
+      FS --> S : bestandsNaam (String)
+      S -> S : auto.setAutopapierNaam(bestandsNaam)
+      S -> R : save(auto)
+      R -> DB : UPDATE autos SET autopapier_naam = ?
+      DB --> R : ok
+      R --> S : Auto
+      S --> C : void
+      C --> K : 200 OK\n"Autopapier opgeslagen"
+    end
+  end
+end
+@enduml

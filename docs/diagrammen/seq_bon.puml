@@ -1,0 +1,45 @@
+@startuml
+skinparam shadowing false
+skinparam sequenceMessageAlign left
+title Sequentiediagram 2: bon genereren voor een reparatie
+actor Kassamedewerker as K
+participant "JwtAuthFilter" as F
+participant "ReparatieController" as C
+participant "ReparatieService" as S
+participant "ReparatieRepository" as R
+database "PostgreSQL" as DB
+
+K -> F : GET /reparaties/{id}/bon\nAuthorization: Bearer <token>
+F -> F : jwtUtil.isTokenValid(token, userDetails)
+F -> C : getBon(id)
+C -> S : genereerBon(id)
+S -> S : findReparatie(id)
+S -> R : findById(id)
+R -> DB : SELECT reparatie + keuring + auto + klant
+DB --> R : rijen
+alt reparatie niet gevonden
+  R --> S : Optional.empty()
+  S --> C : throw RecordNotFoundException
+  C --> K : 404 Not Found\n"Reparatie met id {id} niet gevonden"
+else gevonden
+  R --> S : Optional<Reparatie>
+  S -> S : new BonResponseDto()\nkenteken, klantNaam invullen
+  S -> S : keuringBedragExcl = Keuring.KEURINGS_BEDRAG (45,00)\nkeuringBedragIncl = metBtw(45,00)
+  alt status != NIET_UITVOEREN
+    loop voor elke ReparatieRegel
+      S -> S : new BonRegelDto(naam, prijsExcl, metBtw(prijsExcl))
+    end
+    loop voor elke OverigeHandeling
+      S -> S : new BonRegelDto(omschrijving, prijsExcl, metBtw(prijsExcl))
+    end
+    loop voor elk ReparatieOnderdeel
+      S -> S : new BonOnderdeelRegelDto(naam, aantal,\nprijs x aantal, metBtw(...))
+    end
+  else klant niet akkoord
+    S -> S : alleen keuringsbedrag op de bon
+  end
+  S -> S : totalExcl, totalIncl = metBtw(totaal)\nbtwBedrag = totalIncl - totalExcl
+  S --> C : BonResponseDto
+  C --> K : 200 OK\nJSON bon (regels excl/incl 21% btw + totalen)
+end
+@enduml
