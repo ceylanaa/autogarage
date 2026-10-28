@@ -11,9 +11,9 @@ public class BonResponseDto {
     private String klantNaam;
     private BigDecimal keuringBedragExcl;
     private BigDecimal keuringBedragIncl;
-    public List<BonRegelDto> handelingen = new ArrayList<>();
-    public List<BonRegelDto> overigeHandelingen = new ArrayList<>();
-    public List<BonOnderdeelRegelDto> onderdelen = new ArrayList<>();
+    private List<BonRegelDto> handelingen = new ArrayList<>();
+    private List<BonRegelDto> overigeHandelingen = new ArrayList<>();
+    private List<BonOnderdeelRegelDto> onderdelen = new ArrayList<>();
     private BigDecimal totalExcl;
     private BigDecimal btwBedrag;
     private BigDecimal totalIncl;
@@ -89,5 +89,29 @@ public class BonResponseDto {
 
     public void setBetaald(boolean betaald) {
         this.betaald = betaald;
+    }
+
+    public List<BonRegelDto> getHandelingen() {
+        return handelingen;
+    }
+
+    public void setHandelingen(List<BonRegelDto> handelingen) {
+        this.handelingen = handelingen;
+    }
+
+    public List<BonRegelDto> getOverigeHandelingen() {
+        return overigeHandelingen;
+    }
+
+    public void setOverigeHandelingen(List<BonRegelDto> overigeHandelingen) {
+        this.overigeHandelingen = overigeHandelingen;
+    }
+
+    public List<BonOnderdeelRegelDto> getOnderdelen() {
+        return onderdelen;
+    }
+
+    public void setOnderdelen(List<BonOnderdeelRegelDto> onderdelen) {
+        this.onderdelen = onderdelen;
     }
 }

@@ -8,7 +8,9 @@ import nl.novi.autogarage.repositories.KlantRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import nl.novi.autogarage.mappers.KlantMapper;
 import org.mockito.InjectMocks;
+import org.mockito.Spy;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -24,6 +26,10 @@ class KlantServiceTest {
 
     @Mock
     KlantRepository klantRepository;
+
+    // echte mapper gebruiken, die hoeft niet gemockt te worden
+    @Spy
+    KlantMapper klantMapper = new KlantMapper();
 
     @InjectMocks
     KlantService klantService;
