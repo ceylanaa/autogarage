@@ -1,0 +1,92 @@
+@startuml
+!pragma layout smetana
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+skinparam ClassBackgroundColor White
+skinparam ClassBorderColor Black
+skinparam ArrowColor Black
+hide circle
+hide methods
+title Klassendiagram domeinmodel Autogarage
+
+class Gebruiker {
+  id : Integer
+  gebruikersnaam : String
+  wachtwoord : String
+}
+class Rol {
+  id : Integer
+  naam : String
+}
+class Klant {
+  id : Integer
+  naam : String
+  telefoonnummer : String
+  emailadres : String
+}
+class Auto {
+  id : Integer
+  kenteken : String
+  merk : String
+  model : String
+  autopapierNaam : String
+}
+class Keuring {
+  id : Integer
+  keuringsDatum : Date
+  tekortkomingen : String
+  status : KeuringStatus
+  keuringsBedrag : Decimal = 45,00
+}
+class Reparatie {
+  id : Integer
+  reparatieDatum : Date
+  status : ReparatieStatus
+  betaald : Boolean
+}
+class Onderdeel {
+  id : Integer
+  naam : String
+  prijsExclBtw : Decimal
+  voorraad : Integer
+}
+class ReparatieHandeling {
+  id : Integer
+  naam : String
+  prijsExclBtw : Decimal
+}
+class ReparatieOnderdeel {
+  id : Integer
+  aantal : Integer
+}
+class ReparatieRegel {
+  id : Integer
+}
+class OverigeHandeling {
+  id : Integer
+  omschrijving : String
+  prijsExclBtw : Decimal
+}
+enum KeuringStatus {
+  GEPLAND
+  GEKEURD
+  KLANT_AKKOORD
+  KLANT_NIET_AKKOORD
+}
+enum ReparatieStatus {
+  GEPLAND
+  IN_BEHANDELING
+  GEREED
+  NIET_UITVOEREN
+}
+
+Gebruiker "0..*" --> "1" Rol : heeft
+Klant "1" -- "0..*" Auto : bezit
+Auto "1" -- "0..*" Keuring : wordt gekeurd
+Keuring "1" -- "0..1" Reparatie : leidt tot
+Reparatie "1" *-- "0..*" ReparatieOnderdeel
+ReparatieOnderdeel "0..*" --> "1" Onderdeel
+Reparatie "1" *-- "0..*" ReparatieRegel
+ReparatieRegel "0..*" --> "1" ReparatieHandeling
+Reparatie "1" *-- "0..*" OverigeHandeling
+@enduml
