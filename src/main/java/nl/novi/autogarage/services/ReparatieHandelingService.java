@@ -33,15 +33,15 @@ public class ReparatieHandelingService {
 
     public ReparatieHandelingResponseDto createReparatieHandeling(ReparatieHandelingRequestDto dto) {
         ReparatieHandeling handeling = new ReparatieHandeling();
-        handeling.setNaam(dto.naam);
-        handeling.setPrijsExclBtw(dto.prijsExclBtw);
+        handeling.setNaam(dto.getNaam());
+        handeling.setPrijsExclBtw(dto.getPrijsExclBtw());
         return toDto(repository.save(handeling));
     }
 
     public ReparatieHandelingResponseDto updateReparatieHandeling(Long id, ReparatieHandelingRequestDto dto) {
         ReparatieHandeling handeling = findHandeling(id);
-        handeling.setNaam(dto.naam);
-        handeling.setPrijsExclBtw(dto.prijsExclBtw);
+        handeling.setNaam(dto.getNaam());
+        handeling.setPrijsExclBtw(dto.getPrijsExclBtw());
         return toDto(repository.save(handeling));
     }
 
@@ -59,9 +59,9 @@ public class ReparatieHandelingService {
 
     private ReparatieHandelingResponseDto toDto(ReparatieHandeling handeling) {
         ReparatieHandelingResponseDto dto = new ReparatieHandelingResponseDto();
-        dto.id = handeling.getId();
-        dto.naam = handeling.getNaam();
-        dto.prijsExclBtw = handeling.getPrijsExclBtw();
+        dto.setId(handeling.getId());
+        dto.setNaam(handeling.getNaam());
+        dto.setPrijsExclBtw(handeling.getPrijsExclBtw());
         return dto;
     }
 }

@@ -23,13 +23,13 @@ public class AuthService {
     public AuthResponseDto login(LoginRequestDto dto) {
         // gooit BadCredentialsException als het niet klopt
         Authentication auth = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(dto.gebruikersnaam, dto.wachtwoord));
+                new UsernamePasswordAuthenticationToken(dto.getGebruikersnaam(), dto.getWachtwoord()));
         UserDetails userDetails = (UserDetails) auth.getPrincipal();
 
         AuthResponseDto response = new AuthResponseDto();
-        response.token = jwtUtil.generateToken(userDetails);
-        response.gebruikersnaam = userDetails.getUsername();
-        response.rol = userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", "");
+        response.setToken(jwtUtil.generateToken(userDetails));
+        response.setGebruikersnaam(userDetails.getUsername());
+        response.setRol(userDetails.getAuthorities().iterator().next().getAuthority().replace("ROLE_", ""));
         return response;
     }
 }

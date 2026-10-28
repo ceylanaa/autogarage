@@ -7,6 +7,22 @@ import java.time.LocalDate;
 public class ReparatieRequestDto {
 
     @NotNull
-    public Long keuringId;
-    public LocalDate reparatieDatum;
+    private Long keuringId;
+    private LocalDate reparatieDatum;
+
+    public Long getKeuringId() {
+        return keuringId;
+    }
+
+    public void setKeuringId(Long keuringId) {
+        this.keuringId = keuringId;
+    }
+
+    public LocalDate getReparatieDatum() {
+        return reparatieDatum;
+    }
+
+    public void setReparatieDatum(LocalDate reparatieDatum) {
+        this.reparatieDatum = reparatieDatum;
+    }
 }

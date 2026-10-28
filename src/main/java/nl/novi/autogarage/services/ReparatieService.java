@@ -47,14 +47,14 @@ public class ReparatieService {
     }
 
     public ReparatieResponseDto createReparatie(ReparatieRequestDto dto) {
-        Keuring keuring = keuringRepository.findById(dto.keuringId)
-                .orElseThrow(() -> new RecordNotFoundException("Keuring met id " + dto.keuringId + " niet gevonden"));
-        if (reparatieRepository.existsByKeuringId(dto.keuringId)) {
-            throw new BadRequestException("Er bestaat al een reparatie voor keuring " + dto.keuringId);
+        Keuring keuring = keuringRepository.findById(dto.getKeuringId())
+                .orElseThrow(() -> new RecordNotFoundException("Keuring met id " + dto.getKeuringId() + " niet gevonden"));
+        if (reparatieRepository.existsByKeuringId(dto.getKeuringId())) {
+            throw new BadRequestException("Er bestaat al een reparatie voor keuring " + dto.getKeuringId());
         }
         Reparatie reparatie = new Reparatie();
         reparatie.setKeuring(keuring);
-        reparatie.setReparatieDatum(dto.reparatieDatum);
+        reparatie.setReparatieDatum(dto.getReparatieDatum());
         reparatie.setStatus(ReparatieStatus.GEPLAND);
         reparatie.setBetaald(false);
         return reparatieToResponseDto(reparatieRepository.save(reparatie));
@@ -63,28 +63,28 @@ public class ReparatieService {
     public ReparatieResponseDto updateReparatieStatus(Long id, ReparatieStatusRequestDto dto) {
         Reparatie reparatie = findReparatie(id);
         try {
-            reparatie.setStatus(ReparatieStatus.valueOf(dto.status.toUpperCase()));
+            reparatie.setStatus(ReparatieStatus.valueOf(dto.getStatus().toUpperCase()));
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Ongeldige status: " + dto.status);
+            throw new BadRequestException("Ongeldige status: " + dto.getStatus());
         }
         return reparatieToResponseDto(reparatieRepository.save(reparatie));
     }
 
     public ReparatieOnderdeelResponseDto addOnderdeel(Long reparatieId, ReparatieOnderdeelRequestDto dto) {
         Reparatie reparatie = findReparatie(reparatieId);
-        Onderdeel onderdeel = onderdeelRepository.findById(dto.onderdeelId)
-                .orElseThrow(() -> new RecordNotFoundException("Onderdeel met id " + dto.onderdeelId + " niet gevonden"));
+        Onderdeel onderdeel = onderdeelRepository.findById(dto.getOnderdeelId())
+                .orElseThrow(() -> new RecordNotFoundException("Onderdeel met id " + dto.getOnderdeelId() + " niet gevonden"));
 
         // voorraad controleren en bijwerken
-        if (onderdeel.getVoorraad() < dto.aantal) {
+        if (onderdeel.getVoorraad() < dto.getAantal()) {
             throw new BadRequestException("Niet genoeg voorraad van " + onderdeel.getNaam());
         }
-        onderdeel.setVoorraad(onderdeel.getVoorraad() - dto.aantal);
+        onderdeel.setVoorraad(onderdeel.getVoorraad() - dto.getAantal());
 
         ReparatieOnderdeel ro = new ReparatieOnderdeel();
         ro.setReparatie(reparatie);
         ro.setOnderdeel(onderdeel);
-        ro.setAantal(dto.aantal);
+        ro.setAantal(dto.getAantal());
         reparatie.getOnderdelen().add(ro);
         reparatieRepository.saveAndFlush(reparatie);
 
@@ -113,8 +113,8 @@ public class ReparatieService {
 
     public ReparatieRegelResponseDto addHandeling(Long reparatieId, ReparatieRegelRequestDto dto) {
         Reparatie reparatie = findReparatie(reparatieId);
-        ReparatieHandeling handeling = reparatieHandelingRepository.findById(dto.reparatieHandelingId)
-                .orElseThrow(() -> new RecordNotFoundException("Reparatiehandeling met id " + dto.reparatieHandelingId + " niet gevonden"));
+        ReparatieHandeling handeling = reparatieHandelingRepository.findById(dto.getReparatieHandelingId())
+                .orElseThrow(() -> new RecordNotFoundException("Reparatiehandeling met id " + dto.getReparatieHandelingId() + " niet gevonden"));
 
         ReparatieRegel regel = new ReparatieRegel();
         regel.setReparatie(reparatie);
@@ -138,8 +138,8 @@ public class ReparatieService {
         Reparatie reparatie = findReparatie(reparatieId);
         OverigeHandeling overig = new OverigeHandeling();
         overig.setReparatie(reparatie);
-        overig.setOmschrijving(dto.omschrijving);
-        overig.setPrijsExclBtw(dto.prijsExclBtw);
+        overig.setOmschrijving(dto.getOmschrijving());
+        overig.setPrijsExclBtw(dto.getPrijsExclBtw());
         reparatie.getOverigeHandelingen().add(overig);
         reparatieRepository.saveAndFlush(reparatie);
 
@@ -166,47 +166,47 @@ public class ReparatieService {
     public BonResponseDto genereerBon(Long id) {
         Reparatie reparatie = findReparatie(id);
         BonResponseDto bon = new BonResponseDto();
-        bon.reparatieId = reparatie.getId();
-        bon.kenteken = reparatie.getKeuring().getAuto().getKenteken();
-        bon.klantNaam = reparatie.getKeuring().getAuto().getKlant().getNaam();
+        bon.setReparatieId(reparatie.getId());
+        bon.setKenteken(reparatie.getKeuring().getAuto().getKenteken());
+        bon.setKlantNaam(reparatie.getKeuring().getAuto().getKlant().getNaam());
 
         BigDecimal totaal = Keuring.KEURINGS_BEDRAG;
-        bon.keuringBedragExcl = Keuring.KEURINGS_BEDRAG;
-        bon.keuringBedragIncl = metBtw(Keuring.KEURINGS_BEDRAG);
+        bon.setKeuringBedragExcl(Keuring.KEURINGS_BEDRAG);
+        bon.setKeuringBedragIncl(metBtw(Keuring.KEURINGS_BEDRAG));
 
         // als de klant niet akkoord is betaalt hij alleen de keuring
         if (reparatie.getStatus() != ReparatieStatus.NIET_UITVOEREN) {
             for (ReparatieRegel regel : reparatie.getHandelingen()) {
                 BonRegelDto r = new BonRegelDto();
-                r.omschrijving = regel.getReparatieHandeling().getNaam();
-                r.prijsExcl = regel.getReparatieHandeling().getPrijsExclBtw();
-                r.prijsIncl = metBtw(r.prijsExcl);
+                r.setOmschrijving(regel.getReparatieHandeling().getNaam());
+                r.setPrijsExcl(regel.getReparatieHandeling().getPrijsExclBtw());
+                r.setPrijsIncl(metBtw(r.getPrijsExcl()));
                 bon.handelingen.add(r);
-                totaal = totaal.add(r.prijsExcl);
+                totaal = totaal.add(r.getPrijsExcl());
             }
             for (OverigeHandeling overig : reparatie.getOverigeHandelingen()) {
                 BonRegelDto r = new BonRegelDto();
-                r.omschrijving = overig.getOmschrijving();
-                r.prijsExcl = overig.getPrijsExclBtw();
-                r.prijsIncl = metBtw(r.prijsExcl);
+                r.setOmschrijving(overig.getOmschrijving());
+                r.setPrijsExcl(overig.getPrijsExclBtw());
+                r.setPrijsIncl(metBtw(r.getPrijsExcl()));
                 bon.overigeHandelingen.add(r);
-                totaal = totaal.add(r.prijsExcl);
+                totaal = totaal.add(r.getPrijsExcl());
             }
             for (ReparatieOnderdeel ro : reparatie.getOnderdelen()) {
                 BonOnderdeelRegelDto r = new BonOnderdeelRegelDto();
-                r.naam = ro.getOnderdeel().getNaam();
-                r.aantal = ro.getAantal();
-                r.prijsExcl = ro.getOnderdeel().getPrijsExclBtw().multiply(BigDecimal.valueOf(ro.getAantal()));
-                r.prijsIncl = metBtw(r.prijsExcl);
+                r.setNaam(ro.getOnderdeel().getNaam());
+                r.setAantal(ro.getAantal());
+                r.setPrijsExcl(ro.getOnderdeel().getPrijsExclBtw().multiply(BigDecimal.valueOf(ro.getAantal())));
+                r.setPrijsIncl(metBtw(r.getPrijsExcl()));
                 bon.onderdelen.add(r);
-                totaal = totaal.add(r.prijsExcl);
+                totaal = totaal.add(r.getPrijsExcl());
             }
         }
 
-        bon.totalExcl = totaal.setScale(2, RoundingMode.HALF_UP);
-        bon.totalIncl = metBtw(totaal);
-        bon.btwBedrag = bon.totalIncl.subtract(bon.totalExcl);
-        bon.betaald = reparatie.isBetaald();
+        bon.setTotalExcl(totaal.setScale(2, RoundingMode.HALF_UP));
+        bon.setTotalIncl(metBtw(totaal));
+        bon.setBtwBedrag(bon.getTotalIncl().subtract(bon.getTotalExcl()));
+        bon.setBetaald(reparatie.isBetaald());
         return bon;
     }
 
@@ -221,11 +221,11 @@ public class ReparatieService {
 
     private ReparatieResponseDto reparatieToResponseDto(Reparatie reparatie) {
         ReparatieResponseDto dto = new ReparatieResponseDto();
-        dto.id = reparatie.getId();
-        dto.keuringId = reparatie.getKeuring().getId();
-        dto.reparatieDatum = reparatie.getReparatieDatum();
-        dto.status = reparatie.getStatus().name();
-        dto.betaald = reparatie.isBetaald();
+        dto.setId(reparatie.getId());
+        dto.setKeuringId(reparatie.getKeuring().getId());
+        dto.setReparatieDatum(reparatie.getReparatieDatum());
+        dto.setStatus(reparatie.getStatus().name());
+        dto.setBetaald(reparatie.isBetaald());
         for (ReparatieOnderdeel ro : reparatie.getOnderdelen()) {
             dto.onderdelen.add(onderdeelToDto(ro));
         }
@@ -240,28 +240,28 @@ public class ReparatieService {
 
     private ReparatieOnderdeelResponseDto onderdeelToDto(ReparatieOnderdeel ro) {
         ReparatieOnderdeelResponseDto dto = new ReparatieOnderdeelResponseDto();
-        dto.id = ro.getId();
-        dto.onderdeelId = ro.getOnderdeel().getId();
-        dto.naam = ro.getOnderdeel().getNaam();
-        dto.prijsExclBtw = ro.getOnderdeel().getPrijsExclBtw();
-        dto.aantal = ro.getAantal();
+        dto.setId(ro.getId());
+        dto.setOnderdeelId(ro.getOnderdeel().getId());
+        dto.setNaam(ro.getOnderdeel().getNaam());
+        dto.setPrijsExclBtw(ro.getOnderdeel().getPrijsExclBtw());
+        dto.setAantal(ro.getAantal());
         return dto;
     }
 
     private ReparatieRegelResponseDto regelToDto(ReparatieRegel regel) {
         ReparatieRegelResponseDto dto = new ReparatieRegelResponseDto();
-        dto.id = regel.getId();
-        dto.reparatieHandelingId = regel.getReparatieHandeling().getId();
-        dto.naam = regel.getReparatieHandeling().getNaam();
-        dto.prijsExclBtw = regel.getReparatieHandeling().getPrijsExclBtw();
+        dto.setId(regel.getId());
+        dto.setReparatieHandelingId(regel.getReparatieHandeling().getId());
+        dto.setNaam(regel.getReparatieHandeling().getNaam());
+        dto.setPrijsExclBtw(regel.getReparatieHandeling().getPrijsExclBtw());
         return dto;
     }
 
     private OverigeHandelingResponseDto overigToDto(OverigeHandeling overig) {
         OverigeHandelingResponseDto dto = new OverigeHandelingResponseDto();
-        dto.id = overig.getId();
-        dto.omschrijving = overig.getOmschrijving();
-        dto.prijsExclBtw = overig.getPrijsExclBtw();
+        dto.setId(overig.getId());
+        dto.setOmschrijving(overig.getOmschrijving());
+        dto.setPrijsExclBtw(overig.getPrijsExclBtw());
         return dto;
     }
 }

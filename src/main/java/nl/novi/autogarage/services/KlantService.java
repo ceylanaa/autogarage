@@ -38,9 +38,9 @@ public class KlantService {
 
     public KlantResponseDto updateKlant(Long id, KlantRequestDto dto) {
         Klant klant = findKlant(id);
-        klant.setNaam(dto.naam);
-        klant.setTelefoonnummer(dto.telefoonnummer);
-        klant.setEmailadres(dto.emailadres);
+        klant.setNaam(dto.getNaam());
+        klant.setTelefoonnummer(dto.getTelefoonnummer());
+        klant.setEmailadres(dto.getEmailadres());
         return klantToResponseDto(klantRepository.save(klant));
     }
 
@@ -58,18 +58,18 @@ public class KlantService {
 
     private KlantResponseDto klantToResponseDto(Klant klant) {
         KlantResponseDto dto = new KlantResponseDto();
-        dto.id = klant.getId();
-        dto.naam = klant.getNaam();
-        dto.telefoonnummer = klant.getTelefoonnummer();
-        dto.emailadres = klant.getEmailadres();
+        dto.setId(klant.getId());
+        dto.setNaam(klant.getNaam());
+        dto.setTelefoonnummer(klant.getTelefoonnummer());
+        dto.setEmailadres(klant.getEmailadres());
         return dto;
     }
 
     private Klant requestDtoToKlant(KlantRequestDto dto) {
         Klant klant = new Klant();
-        klant.setNaam(dto.naam);
-        klant.setTelefoonnummer(dto.telefoonnummer);
-        klant.setEmailadres(dto.emailadres);
+        klant.setNaam(dto.getNaam());
+        klant.setTelefoonnummer(dto.getTelefoonnummer());
+        klant.setEmailadres(dto.getEmailadres());
         return klant;
     }
 }

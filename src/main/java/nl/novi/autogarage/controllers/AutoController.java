@@ -38,7 +38,7 @@ public class AutoController {
     @PostMapping
     public ResponseEntity<AutoResponseDto> createAuto(@Valid @RequestBody AutoRequestDto dto) {
         AutoResponseDto nieuw = autoService.createAuto(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(nieuw.id).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(nieuw.getId()).toUri();
         return ResponseEntity.created(uri).body(nieuw);
     }
 

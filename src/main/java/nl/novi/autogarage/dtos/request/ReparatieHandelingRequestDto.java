@@ -7,8 +7,24 @@ import java.math.BigDecimal;
 public class ReparatieHandelingRequestDto {
 
     @NotBlank
-    public String naam;
+    private String naam;
     @NotNull
     @PositiveOrZero
-    public BigDecimal prijsExclBtw;
+    private BigDecimal prijsExclBtw;
+
+    public String getNaam() {
+        return naam;
+    }
+
+    public void setNaam(String naam) {
+        this.naam = naam;
+    }
+
+    public BigDecimal getPrijsExclBtw() {
+        return prijsExclBtw;
+    }
+
+    public void setPrijsExclBtw(BigDecimal prijsExclBtw) {
+        this.prijsExclBtw = prijsExclBtw;
+    }
 }

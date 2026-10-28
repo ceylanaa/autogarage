@@ -27,15 +27,15 @@ public class GebruikerService {
     }
 
     public GebruikerResponseDto registerGebruiker(GebruikerRequestDto dto) {
-        if (gebruikerRepository.existsByGebruikersnaam(dto.gebruikersnaam)) {
-            throw new BadRequestException("Gebruikersnaam " + dto.gebruikersnaam + " is al in gebruik");
+        if (gebruikerRepository.existsByGebruikersnaam(dto.getGebruikersnaam())) {
+            throw new BadRequestException("Gebruikersnaam " + dto.getGebruikersnaam() + " is al in gebruik");
         }
-        Rol rol = rolRepository.findByNaam(dto.rolNaam.toUpperCase())
-                .orElseThrow(() -> new BadRequestException("Rol " + dto.rolNaam + " bestaat niet"));
+        Rol rol = rolRepository.findByNaam(dto.getRolNaam().toUpperCase())
+                .orElseThrow(() -> new BadRequestException("Rol " + dto.getRolNaam() + " bestaat niet"));
 
         Gebruiker gebruiker = new Gebruiker();
-        gebruiker.setGebruikersnaam(dto.gebruikersnaam);
-        gebruiker.setWachtwoord(passwordEncoder.encode(dto.wachtwoord));
+        gebruiker.setGebruikersnaam(dto.getGebruikersnaam());
+        gebruiker.setWachtwoord(passwordEncoder.encode(dto.getWachtwoord()));
         gebruiker.setRol(rol);
         return toDto(gebruikerRepository.save(gebruiker));
     }
@@ -50,9 +50,9 @@ public class GebruikerService {
 
     private GebruikerResponseDto toDto(Gebruiker gebruiker) {
         GebruikerResponseDto dto = new GebruikerResponseDto();
-        dto.id = gebruiker.getId();
-        dto.gebruikersnaam = gebruiker.getGebruikersnaam();
-        dto.rolNaam = gebruiker.getRol().getNaam();
+        dto.setId(gebruiker.getId());
+        dto.setGebruikersnaam(gebruiker.getGebruikersnaam());
+        dto.setRolNaam(gebruiker.getRol().getNaam());
         return dto;
     }
 }
