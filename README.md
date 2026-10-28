@@ -120,6 +120,9 @@ In de map `docs` staat `Autogarage_API.postman_collection.json`.
    in `token_kassamedewerker`, `token_monteur` en `token_backoffice`.
 4. Daarna werken de andere requests, die staan per rol in een eigen map.
 
+Draai de collectie (bijvoorbeeld met de Collection Runner) altijd na een herstart van de applicatie.
+De requests passen de testdata aan, dus een tweede keer achter elkaar geeft bij de DELETE requests een 404.
+
 Alle endpoints met uitleg en voorbeelden staan ook in de API-documentatie (PDF).
 
 ## Endpoints per rol
