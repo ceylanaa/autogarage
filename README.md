@@ -7,6 +7,54 @@ Ook kunnen autopapieren (PDF) worden geüpload en gedownload.
 
 Gemaakt met Java 21, Spring Boot 3, Spring Security (JWT) en PostgreSQL.
 
+Belangrijkste functies:
+- klanten en auto's registreren (CRUD)
+- keuringen inplannen en de uitslag vastleggen
+- reparaties bijhouden met onderdelen, standaard handelingen en overige handelingen
+- bon maken met 21% BTW en betaling registreren
+- autopapieren (PDF) uploaden en downloaden
+- inloggen met JWT, met 3 rollen: kassamedewerker, monteur en backoffice
+
+## Inhoudsopgave
+
+1. [Projectstructuur en technieken](#projectstructuur-en-technieken)
+2. [Benodigdheden](#benodigdheden)
+3. [Installatie](#installatie)
+4. [Tests draaien](#tests-draaien)
+5. [Testgebruikers](#testgebruikers)
+6. [Postman collectie](#postman-collectie)
+7. [Endpoints per rol](#endpoints-per-rol)
+8. [Bon](#bon)
+9. [Overige commando's](#overige-commandos)
+
+## Projectstructuur en technieken
+
+```
+autogarage/
+├── docs/                      Postman collectie en diagrammen
+├── src/main/java/nl/novi/autogarage/
+│   ├── controllers/           REST controllers (endpoints)
+│   ├── dtos/                  input- en output DTO's
+│   ├── exceptions/            eigen exceptions en GlobalExceptionHandler
+│   ├── models/                entiteiten (JPA)
+│   ├── repositories/          Spring Data JPA repositories
+│   ├── security/              JWT filter, JwtService en SecurityConfig
+│   └── services/              businesslogica (o.a. de bon)
+├── src/main/resources/
+│   ├── application.properties
+│   └── data.sql               testdata
+├── src/test/                  unit- en integratietests
+└── pom.xml                    Maven dependencies
+```
+
+Gebruikte technieken:
+- Java 21 en Spring Boot 3.3 (Web, Data JPA, Security, Validation)
+- Maven als build tool
+- PostgreSQL als database (H2 voor de tests)
+- JJWT voor de JWT tokens
+- Lombok
+- JUnit 5, Mockito, MockMvc en JaCoCo voor het testen
+
 ## Benodigdheden
 
 - Java 21 (JDK)
@@ -61,6 +109,18 @@ Inloggen: `POST /auth/login` met body
 { "gebruikersnaam": "monteur", "wachtwoord": "wachtwoord123" }
 ```
 Je krijgt een token terug. Zet die bij elke request in de header: `Authorization: Bearer <token>`.
+Een token is 24 uur geldig.
+
+## Postman collectie
+
+In de map `docs` staat `Autogarage_API.postman_collection.json`.
+1. Importeer dit bestand in Postman (Import > bestand kiezen).
+2. Vul bij de collectie variabelen `testWachtwoord` in met het wachtwoord uit de tabel hierboven.
+3. Voer de drie login requests uit (map "Openbaar"). De tokens worden dan automatisch opgeslagen
+   in `token_kassamedewerker`, `token_monteur` en `token_backoffice`.
+4. Daarna werken de andere requests, die staan per rol in een eigen map.
+
+Alle endpoints met uitleg en voorbeelden staan ook in de API-documentatie (PDF).
 
 ## Endpoints per rol
 
@@ -91,3 +151,14 @@ Je krijgt een token terug. Zet die bij elke request in de header: `Authorization
 De bon bestaat uit de keuring (vast €45,00 excl. BTW) plus alle handelingen, overige handelingen en onderdelen.
 Bij elke regel staat de prijs excl. en incl. 21% BTW, en onderaan het totaal. Als de reparatie de status
 `NIET_UITVOEREN` heeft, betaalt de klant alleen de keuring.
+
+## Overige commando's
+
+| Commando | Wat doet het |
+|----------|--------------|
+| `mvn clean` | verwijdert de map `target` |
+| `mvn clean install` | bouwt het project en draait de tests |
+| `mvn package -DskipTests` | maakt een jar zonder de tests te draaien |
+| `java -jar target/autogarage-0.0.1-SNAPSHOT.jar` | start de gebouwde jar |
+| `mvn test -Dtest=KlantServiceTest` | draait één testklasse |
+| `mvn verify` | draait de tests en maakt het JaCoCo rapport |
