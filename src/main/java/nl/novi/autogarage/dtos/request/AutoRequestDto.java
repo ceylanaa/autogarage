@@ -5,10 +5,42 @@ import jakarta.validation.constraints.*;
 public class AutoRequestDto {
 
     @NotBlank(message = "kenteken is verplicht")
-    public String kenteken;
+    private String kenteken;
     @NotBlank
-    public String merk;
-    public String model;
+    private String merk;
+    private String model;
     @NotNull(message = "klantId is verplicht")
-    public Long klantId;
+    private Long klantId;
+
+    public String getKenteken() {
+        return kenteken;
+    }
+
+    public void setKenteken(String kenteken) {
+        this.kenteken = kenteken;
+    }
+
+    public String getMerk() {
+        return merk;
+    }
+
+    public void setMerk(String merk) {
+        this.merk = merk;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public Long getKlantId() {
+        return klantId;
+    }
+
+    public void setKlantId(Long klantId) {
+        this.klantId = klantId;
+    }
 }

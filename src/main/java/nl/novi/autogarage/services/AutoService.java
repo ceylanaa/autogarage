@@ -41,8 +41,8 @@ public class AutoService {
     }
 
     public AutoResponseDto createAuto(AutoRequestDto dto) {
-        if (autoRepository.existsByKenteken(dto.kenteken)) {
-            throw new BadRequestException("Er bestaat al een auto met kenteken " + dto.kenteken);
+        if (autoRepository.existsByKenteken(dto.getKenteken())) {
+            throw new BadRequestException("Er bestaat al een auto met kenteken " + dto.getKenteken());
         }
         Auto auto = new Auto();
         vulAuto(auto, dto);
@@ -91,23 +91,23 @@ public class AutoService {
     }
 
     private void vulAuto(Auto auto, AutoRequestDto dto) {
-        Klant klant = klantRepository.findById(dto.klantId)
-                .orElseThrow(() -> new RecordNotFoundException("Klant met id " + dto.klantId + " niet gevonden"));
-        auto.setKenteken(dto.kenteken);
-        auto.setMerk(dto.merk);
-        auto.setModel(dto.model);
+        Klant klant = klantRepository.findById(dto.getKlantId())
+                .orElseThrow(() -> new RecordNotFoundException("Klant met id " + dto.getKlantId() + " niet gevonden"));
+        auto.setKenteken(dto.getKenteken());
+        auto.setMerk(dto.getMerk());
+        auto.setModel(dto.getModel());
         auto.setKlant(klant);
     }
 
     private AutoResponseDto autoToResponseDto(Auto auto) {
         AutoResponseDto dto = new AutoResponseDto();
-        dto.id = auto.getId();
-        dto.kenteken = auto.getKenteken();
-        dto.merk = auto.getMerk();
-        dto.model = auto.getModel();
-        dto.klantId = auto.getKlant().getId();
-        dto.klantNaam = auto.getKlant().getNaam();
-        dto.heeftAutopapier = auto.getAutopapierNaam() != null;
+        dto.setId(auto.getId());
+        dto.setKenteken(auto.getKenteken());
+        dto.setMerk(auto.getMerk());
+        dto.setModel(auto.getModel());
+        dto.setKlantId(auto.getKlant().getId());
+        dto.setKlantNaam(auto.getKlant().getNaam());
+        dto.setHeeftAutopapier(auto.getAutopapierNaam() != null);
         return dto;
     }
 }

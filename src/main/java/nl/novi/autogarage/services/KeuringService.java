@@ -39,11 +39,11 @@ public class KeuringService {
     }
 
     public KeuringResponseDto createKeuring(KeuringRequestDto dto) {
-        Auto auto = autoRepository.findById(dto.autoId)
-                .orElseThrow(() -> new RecordNotFoundException("Auto met id " + dto.autoId + " niet gevonden"));
+        Auto auto = autoRepository.findById(dto.getAutoId())
+                .orElseThrow(() -> new RecordNotFoundException("Auto met id " + dto.getAutoId() + " niet gevonden"));
         Keuring keuring = new Keuring();
         keuring.setAuto(auto);
-        keuring.setKeuringsDatum(dto.keuringsDatum);
+        keuring.setKeuringsDatum(dto.getKeuringsDatum());
         keuring.setStatus(KeuringStatus.GEPLAND);
         return keuringToResponseDto(keuringRepository.save(keuring));
     }
@@ -51,12 +51,12 @@ public class KeuringService {
     public KeuringResponseDto updateKeuringStatus(Long id, KeuringStatusRequestDto dto) {
         Keuring keuring = findKeuring(id);
         try {
-            keuring.setStatus(KeuringStatus.valueOf(dto.status.toUpperCase()));
+            keuring.setStatus(KeuringStatus.valueOf(dto.getStatus().toUpperCase()));
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Ongeldige status: " + dto.status);
+            throw new BadRequestException("Ongeldige status: " + dto.getStatus());
         }
-        if (dto.tekortkomingen != null) {
-            keuring.setTekortkomingen(dto.tekortkomingen);
+        if (dto.getTekortkomingen() != null) {
+            keuring.setTekortkomingen(dto.getTekortkomingen());
         }
         return keuringToResponseDto(keuringRepository.save(keuring));
     }
@@ -75,13 +75,13 @@ public class KeuringService {
 
     private KeuringResponseDto keuringToResponseDto(Keuring keuring) {
         KeuringResponseDto dto = new KeuringResponseDto();
-        dto.id = keuring.getId();
-        dto.autoId = keuring.getAuto().getId();
-        dto.kenteken = keuring.getAuto().getKenteken();
-        dto.keuringsDatum = keuring.getKeuringsDatum();
-        dto.tekortkomingen = keuring.getTekortkomingen();
-        dto.status = keuring.getStatus().name();
-        dto.keuringsBedrag = Keuring.KEURINGS_BEDRAG;
+        dto.setId(keuring.getId());
+        dto.setAutoId(keuring.getAuto().getId());
+        dto.setKenteken(keuring.getAuto().getKenteken());
+        dto.setKeuringsDatum(keuring.getKeuringsDatum());
+        dto.setTekortkomingen(keuring.getTekortkomingen());
+        dto.setStatus(keuring.getStatus().name());
+        dto.setKeuringsBedrag(Keuring.KEURINGS_BEDRAG);
         return dto;
     }
 }

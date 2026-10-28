@@ -56,17 +56,17 @@ public class OnderdeelService {
     }
 
     private void vulOnderdeel(Onderdeel onderdeel, OnderdeelRequestDto dto) {
-        onderdeel.setNaam(dto.naam);
-        onderdeel.setPrijsExclBtw(dto.prijsExclBtw);
-        onderdeel.setVoorraad(dto.voorraad);
+        onderdeel.setNaam(dto.getNaam());
+        onderdeel.setPrijsExclBtw(dto.getPrijsExclBtw());
+        onderdeel.setVoorraad(dto.getVoorraad());
     }
 
     private OnderdeelResponseDto onderdeelToResponseDto(Onderdeel onderdeel) {
         OnderdeelResponseDto dto = new OnderdeelResponseDto();
-        dto.id = onderdeel.getId();
-        dto.naam = onderdeel.getNaam();
-        dto.prijsExclBtw = onderdeel.getPrijsExclBtw();
-        dto.voorraad = onderdeel.getVoorraad();
+        dto.setId(onderdeel.getId());
+        dto.setNaam(onderdeel.getNaam());
+        dto.setPrijsExclBtw(onderdeel.getPrijsExclBtw());
+        dto.setVoorraad(onderdeel.getVoorraad());
         return dto;
     }
 }

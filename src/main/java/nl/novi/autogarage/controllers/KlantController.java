@@ -34,7 +34,7 @@ public class KlantController {
     @PostMapping
     public ResponseEntity<KlantResponseDto> createKlant(@Valid @RequestBody KlantRequestDto dto) {
         KlantResponseDto nieuw = klantService.createKlant(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(nieuw.id).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(nieuw.getId()).toUri();
         return ResponseEntity.created(uri).body(nieuw);
     }
 

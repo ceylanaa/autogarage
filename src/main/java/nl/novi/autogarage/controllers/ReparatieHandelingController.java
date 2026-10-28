@@ -34,7 +34,7 @@ public class ReparatieHandelingController {
     @PostMapping
     public ResponseEntity<ReparatieHandelingResponseDto> createReparatieHandeling(@Valid @RequestBody ReparatieHandelingRequestDto dto) {
         ReparatieHandelingResponseDto nieuw = reparatieHandelingService.createReparatieHandeling(dto);
-        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(nieuw.id).toUri();
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(nieuw.getId()).toUri();
         return ResponseEntity.created(uri).body(nieuw);
     }
 

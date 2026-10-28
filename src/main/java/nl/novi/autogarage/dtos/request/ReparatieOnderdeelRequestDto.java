@@ -5,8 +5,24 @@ import jakarta.validation.constraints.*;
 public class ReparatieOnderdeelRequestDto {
 
     @NotNull
-    public Long onderdeelId;
+    private Long onderdeelId;
     @NotNull
     @Positive
-    public Integer aantal;
+    private Integer aantal;
+
+    public Long getOnderdeelId() {
+        return onderdeelId;
+    }
+
+    public void setOnderdeelId(Long onderdeelId) {
+        this.onderdeelId = onderdeelId;
+    }
+
+    public Integer getAantal() {
+        return aantal;
+    }
+
+    public void setAantal(Integer aantal) {
+        this.aantal = aantal;
+    }
 }

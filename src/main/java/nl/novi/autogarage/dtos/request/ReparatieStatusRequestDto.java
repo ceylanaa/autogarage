@@ -5,5 +5,13 @@ import jakarta.validation.constraints.*;
 public class ReparatieStatusRequestDto {
 
     @NotBlank
-    public String status;
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 }
